@@ -17,7 +17,7 @@ rule token = parse
 | '='      { ASSIGN }
 | "=="     { EQ }
 | "!="     { NEQ }
-| '<'      { LT }
+| "<"      { LT }
 | "<="     { LEQ }
 | ">"      { GT }
 | ">="     { GEQ }
@@ -38,8 +38,8 @@ rule token = parse
 | "char"   { CHAR }
 | "pixel"  { PIXEL }
 | "/*"     { Scomment }   
-| "/*"     { Ecomment } 
+| "*/"     { Ecomment } 
 | ['0'-'9']+ as lit { LITERAL(int_of_string lit) }
-| ['a'-'z']+ as var { VARIABLE(var) }
+| ['a'-'z']+ as var { VARIABLE(var) } (* //TODO: more complex regex to capture variable name *)
 | eof { EOF }
 
