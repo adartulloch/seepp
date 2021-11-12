@@ -1,0 +1,88 @@
+1) Pixl includes semant module.
+
+2) Types: Includes an additional string type from the context (note the type is
+	specified here as an i8 array because that's what strings are (see const_string)).
+	
+3) Includes the line "let funcn = ref (List.hd functions) in" ... I believe this simply
+	creates a mutable list named functions (that will contain the functions listed afterwards).
+	
+4) Functions: this is where the pointers for the pixel and matrix are added: "
+    | A.Pixel -> L.pointer_type(L.i64_type context)
+    | A.Matrix(_) -> L.pointer_type(L.i64_type context)
+"
+	More specifically, the pointers are integers of 64 bit width and are stored in the context context.
+
+5) Global variable declaration and storage:
+	This part is roughly the same. They do not add support for floats and therefore there is no case
+	matching needed as all global variables would be const_ints with their respective types. (I believe	
+	this is suggesting that underneath everything all variables are essentially ints).
+	
+6) Defining functions to read and write images: "
+  let return_type = L.pointer_type(L.i64_type context) in
+  let read_img = L.var_arg_function_type return_type [| str_t |] in
+  let read_img_func = L.declare_function "read_img" read_img the_module in
+
+  let arg1 = L.pointer_type(L.i64_type context) in
+  let write_img = L.var_arg_function_type i64_t [|arg1; str_t; str_t |] in
+  let write_img_func = L.declare_function "write_img" write_img the_module in
+"
+	Here they first create their own return type, and then declare a function to read images just as microc
+	declares the printf function. 
+	
+	A bit about declaring functions in LLVM in OCAML: (this is what I think from
+	the documentation) you first declare a function type corresponding to the function you want to declare.
+	Declaring this function type first takes in what type the function type returns, return_type, and then
+	takes in the parameters you pass to the function type as an array (hence the ||). Then the declaration 
+	of the actual function takes in the name of the function you want to make "read_img", the function type 
+	corresponding to this function "read_img", and the module the function will belong in "the_module". 
+
+7) Some additional string functions: "
+  let str_of_int = L.var_arg_function_type (L.pointer_type i8_t) [| i64_t |] in
+  let str_of_int_func = L.declare_function "str_of_int" str_of_int the_module in
+
+  let str_con = L.var_arg_function_type (L.pointer_type i8_t) [| L.pointer_type i8_t; L.pointer_type i8_t |] in
+  let str_con_func = L.declare_function "str_con" str_con the_module in
+"
+	Here they have introduced other functions that introduce certain string functionalities (like converting
+	an int to a string and concatenating strings). I THINK this is what the functions do ... I cannot be certain
+	as I only see what they are returning and inputting as parameters. 
+	
+8) Garbage collection: "
+let _ = L.set_gc (Some "shadow-stack") the_function in
+"
+	I believe this is how they incorporate garbage collection into their language. This line "sets the collection
+	algorithm" of the_function to (Some "shadow-stack"). 
+	
+	(Some "shadow-stack") comes from another llvm function gc. This function returns "Some name" where "Some" is the
+	keyword and "name" is the name of a collection algorithm. "shadow-stack" (I believe) is LLVM's built in garbage
+	collection algorithm. So they are effectively hardwiring all functions to have the built in LLVM garbage collection
+	algorithm.
+
+
+9) Filling in the body of functions: "
+    let str_format_str = L.build_global_stringptr "%s\n" "fmt" builder in
+"
+	The only difference the group made here is involving string constants, they removed the functionality for
+	floats (as they don't have them) and added functionality for strings. (This is what allows the language to use
+	"%s" in printf like we do in C).
+	
+10) Indentation necessary around the Formals and Locals. (it is indented in the slides but not in the source code for
+	microc?).
+	
+11) f_builder "
+    (* Invoke "f builder" if the current block doesn't already
+       have a terminal (e.g., a branch). *)
+    let add_terminal builder f =
+      match L.block_terminator (L.insertion_block builder) with
+        Some _ -> ()
+      | None -> ignore (f builder) in
+"
+	This isn't anything specific to Pixl, Edwards took it out for some reason. All the other groups have this part
+	in their code.
+	
+12) Expression Builder
+	
+	Will do this tomorrow. This part is very complex and very different from microC. The actual Pixel Literal part looks 
+	feasible though ... it is just the overhead from the matrices that adds most of the code.
+
+	
