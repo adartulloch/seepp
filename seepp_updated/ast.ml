@@ -1,27 +1,24 @@
-type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq | And | Or
-type field = Gray
+(* Abstract Syntax Tree and functions for printing it *)
 
-type uop = Neg | Not | Increment | Decrement
-type flip = Bar | Underscore
+type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
+          And | Or
 
-type typ = Int | Bool | Void | String | Pixel | Char | Array of typ
+type uop = Neg | Not
 
-and expr =
+type typ = Int | Bool | Float | Void
+
+type bind = typ * string
+
+type expr =
     Literal of int
-  | StringLit of string
+  | Fliteral of string
   | BoolLit of bool
-  | PixelLit of expr
   | Id of string
   | Binop of expr * op * expr
   | Unop of uop * expr
   | Assign of string * expr
-  | Assignp of string * field * expr
-  | Assignm of string * expr * expr * expr
   | Call of string * expr list
-  | Access of string * field
   | Noexpr
-
-type bind = typ * string
 
 type stmt =
     Block of stmt list
@@ -60,26 +57,12 @@ let string_of_op = function
 let string_of_uop = function
     Neg -> "-"
   | Not -> "!"
-  | Increment -> "++"
-  | Decrement -> "--"
-
-let string_of_field = function
-     GRAY -> "G"
-
-let rec string_of_typ = function
-    Int -> "int"
-  | Bool -> "bool"
-  | Void -> "void"
-  | String -> "string"
-  | Pixel -> "pixel"
-  | Char -> "char"
 
 let rec string_of_expr = function
     Literal(l) -> string_of_int l
+  | Fliteral(l) -> l
   | BoolLit(true) -> "true"
   | BoolLit(false) -> "false"
-  | PixelLit(v1,v2,v3,v4) -> "(" ^ string_of_expr v1 ^ "," ^ string_of_expr v2 ^ "," ^ string_of_expr v3 ^ "," ^ string_of_expr v4 ^ ")"
-  | StringLit(s) -> s
   | Id(s) -> s
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
@@ -87,14 +70,7 @@ let rec string_of_expr = function
   | Assign(v, e) -> v ^ " = " ^ string_of_expr e
   | Call(f, el) ->
       f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-  | Access(id, field) -> id ^ "." ^ string_of_field field
-  | Crop(v, e1, e2, e3, e4) -> v ^ "<" ^ string_of_expr e1 ^ ":" ^ string_of_expr e2 ^ ", " ^ string_of_expr e3 ^ ":" ^ string_of_expr e4 ^ ">"
   | Noexpr -> ""
-  | Rows(id) -> id ^ ".rows"
-  | Cols(id) -> id ^ ".cols"
-  | Assignp(id, f, e1) -> id ^ "." ^ string_of_field f ^ "=" ^ string_of_expr e1
-  | Assignm(id, e1, e2, value) -> id ^ "[" ^ string_of_expr e1 ^ "]" ^ "[" ^ string_of_expr e2 ^ "]" ^ "=" ^ string_of_expr value
-
 
 let rec string_of_stmt = function
     Block(stmts) ->
@@ -109,6 +85,11 @@ let rec string_of_stmt = function
       string_of_expr e3  ^ ") " ^ string_of_stmt s
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
 
+let string_of_typ = function
+    Int -> "int"
+  | Bool -> "bool"
+  | Float -> "float"
+  | Void -> "void"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 
