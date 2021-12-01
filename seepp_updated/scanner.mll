@@ -47,6 +47,7 @@ rule token = parse
 | "void"   { VOID }
 | "true"   { BLIT(true)  }
 | "false"  { BLIT(false) }
+| "Canvas" { CANVAS }
 | digits as lxm { LITERAL(int_of_string lxm) }
 | strings { STRING_LITERAL(s) }
 | digits '.'  digit* ( ['e' 'E'] ['+' '-']? digits )? as lxm { FLIT(lxm) }
