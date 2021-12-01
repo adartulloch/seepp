@@ -6,12 +6,16 @@ open Ast
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA PLUS MINUS TIMES DIVIDE ASSIGN
 %token NOT EQ NEQ LT LEQ GT GEQ AND OR
+<<<<<<< HEAD
+%token RETURN IF ELSE FOR WHILE INT BOOL FLOAT VOID CHAR STRING
+=======
 %token RETURN IF ELSE FOR WHILE INT BOOL FLOAT VOID CHAR CANVAS
+>>>>>>> main
 %token <int> LITERAL
 %token <bool> BLIT
 %token <string> ID FLIT
+%token <string> STRING_LITERAL
 %token EOF
-
 %start program
 %type <Ast.program> program
 
@@ -55,6 +59,7 @@ formal_list:
 typ:
     INT   { Int   }
   | BOOL  { Bool  }
+  | STRING { String }
   | FLOAT { Float }
   | VOID  { Void  }
   | CANVAS { Canvas }
@@ -89,6 +94,7 @@ expr:
   | FLIT	     { Fliteral($1)           }
   | BLIT             { BoolLit($1)            }
   | ID               { Id($1)                 }
+  | STRING_LITERAL   { StringLiteral($1)      }
   | expr PLUS   expr { Binop($1, Add,   $3)   }
   | expr MINUS  expr { Binop($1, Sub,   $3)   }
   | expr TIMES  expr { Binop($1, Mult,  $3)   }

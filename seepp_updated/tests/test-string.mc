@@ -1,7 +1,7 @@
 int main()
 {
-  char i;
-  i = "c";
+  string i;
+  i = "abc";
   printf(i);
   return 0;
 }

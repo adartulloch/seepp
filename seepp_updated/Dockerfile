@@ -1,29 +1,29 @@
-# Based on 20.04 LTS
 FROM ubuntu:focal
+ENV TZ=America/New_York
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -yq && \
+    apt-get upgrade -yq && \
+    apt-get install -yq --no-install-suggests --no-install-recommends \
+        ocaml \
+        menhir \
+        llvm-10 \
+        llvm-10-dev \
+        m4 \
+        git \
+        aspcud \
+        ca-certificates \
+        python2.7 \
+        pkg-config \
+        cmake \
+        opam && \
+    ln -s /usr/bin/lli-10 /usr/bin/lli && \
+    ln -s /usr/bin/llc-10 /usr/bin/llc
 
-RUN apt-get -yq update && \
-    apt-get -y upgrade && \
-    apt-get -yq --no-install-suggests --no-install-recommends install \
-    ocaml \
-    menhir \
-    llvm-10.0 \
-    llvm-10.0-dev \
-    m4 \
-    git \
-    aspcud \
-    ca-certificates \
-    python2.7 \
-    pkg-config \
-    cmake \
-    opam
-
-RUN ln -s /usr/bin/lli-10.0 /usr/bin/lli
-RUN ln -s /usr/bin/llc-10.0 /usr/bin/llc
-
-RUN opam init
-RUN opam install \
+RUN opam init --auto-setup --yes --disable-sandboxing
+RUN opam install --yes \
     llvm.10.0.0 \
-    ocamlfind
+    ocamlfind \
+    ocamlbuild
 
 WORKDIR /root
 

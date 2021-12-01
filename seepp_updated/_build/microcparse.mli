@@ -28,10 +28,13 @@ type token =
   | BOOL
   | FLOAT
   | VOID
+  | CHAR
+  | STRING
   | LITERAL of (int)
   | BLIT of (bool)
   | ID of (string)
   | FLIT of (string)
+  | STRING_LITERAL of (string)
   | EOF
 
 val program :
