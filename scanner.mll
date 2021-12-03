@@ -40,7 +40,7 @@ rule token = parse
 | "while"  { WHILE }
 | "return" { RETURN }
 | "int"    { INT }
-| "char" { CHAR }
+| "char"   { CHAR }
 | "string" { STRING }
 | "bool"   { BOOL }
 | "float"  { FLOAT }
@@ -48,6 +48,7 @@ rule token = parse
 | "true"   { BLIT(true)  }
 | "false"  { BLIT(false) }
 | "Canvas" { CANVAS }
+| "Pixel"  { PIXEL }
 | digits as lxm { LITERAL(int_of_string lxm) }
 | strings { STRING_LITERAL(s) }
 | digits '.'  digit* ( ['e' 'E'] ['+' '-']? digits )? as lxm { FLIT(lxm) }

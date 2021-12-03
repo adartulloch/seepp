@@ -6,7 +6,7 @@ open Ast
 
 %token SEMI LPAREN RPAREN LBRACE RBRACE COMMA PLUS MINUS TIMES DIVIDE ASSIGN
 %token NOT EQ NEQ LT LEQ GT GEQ AND OR
-%token RETURN IF ELSE FOR WHILE INT BOOL FLOAT VOID CHAR STRING CANVAS
+%token RETURN IF ELSE FOR WHILE INT BOOL FLOAT VOID CHAR STRING CANVAS PIXEL
 %token <int> LITERAL
 %token <bool> BLIT
 %token <string> ID FLIT
@@ -59,6 +59,7 @@ typ:
   | FLOAT { Float }
   | VOID  { Void  }
   | CANVAS { Canvas }
+  | PIXEL { Pixel }
 
 vdecl_list:
     /* nothing */    { [] }
@@ -118,5 +119,5 @@ args_list:
     expr                    { [$1] }
   | args_list COMMA expr { $3 :: $1 }
 
-  canvas:
-    LPAREN expr COMMA expr RPAREN { CanvasLit($2, $4) }
+canvas:
+  LPAREN expr COMMA expr RPAREN { CanvasLit($2, $4) }

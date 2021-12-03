@@ -5,7 +5,7 @@ type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
 
 type uop = Neg | Not
 
-type typ = Int | Bool | Float | Void | Char | String | Canvas
+type typ = Int | Bool | Float | Void | Char | String | Canvas | Pixel
 
 type bind = typ * string
 
@@ -97,6 +97,7 @@ let string_of_typ = function
   | Char -> "char"
   | String -> "string"
   | Canvas -> "Canvas"
+  | Pixel -> "Pixel"
 
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
