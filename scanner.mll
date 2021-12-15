@@ -1,25 +1,23 @@
-(* Ocamllex scanner for MicroC *)
+(* Ocamllex scanner for See++ *)
+(*     Authors: TODO *) 
 
-{ open Microcparse }
+{ open Parserseep }
 
 let digit = ['0' - '9']
 let digits = digit+
-
-let escape = '\\' ['\\' ''' '"' 'n' 'r' 't']
-let ascii = ([' '-'!' '#'-'[' ']'-'~'])
-
-let strings = '"' ( (ascii | escape)* as s) '"'
-
+let append = "-> append()";
 
 rule token = parse
   [' ' '\t' '\r' '\n'] { token lexbuf } (* Whitespace *)
 | "/*"     { comment lexbuf }           (* Comments *)
+| "//"     { single lexbuf }            (* Single line comments *)   
 | '('      { LPAREN }
 | ')'      { RPAREN }
 | '{'      { LBRACE }
 | '}'      { RBRACE }
 | ';'      { SEMI }
 | ','      { COMMA }
+| '.'      { DOT }
 | '+'      { PLUS }
 | '-'      { MINUS }
 | '*'      { TIMES }
@@ -39,24 +37,32 @@ rule token = parse
 | "for"    { FOR }
 | "while"  { WHILE }
 | "return" { RETURN }
+| "break"  { BREAK }
+| "continue" { CONTINUE }
 | "int"    { INT }
-| "char"   { CHAR }
-| "string" { STRING }
 | "bool"   { BOOL }
 | "float"  { FLOAT }
 | "void"   { VOID }
+| "char"   { CHAR }
+| "String" { STRING }
+| "Point"  { POINT }
+| "Pixel"  { PIXEL }
+| "Canvas" { CANVAS }
 | "true"   { BLIT(true)  }
 | "false"  { BLIT(false) }
-| "Canvas" { CANVAS }
-| "Pixel"  { PIXEL }
+| append   { SHOEHORN }
 | digits as lxm { LITERAL(int_of_string lxm) }
-| strings { STRING_LITERAL(s) }
 | digits '.'  digit* ( ['e' 'E'] ['+' '-']? digits )? as lxm { FLIT(lxm) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']*     as lxm { ID(lxm) }
 | eof { EOF }
+| ''' (_ as ch) ''' { CHAR_LITERAL(ch) }
+| '"' ([^ '"']* as str) '"' { STRING_LITERAL(str) }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
-
 
 and comment = parse
   "*/" { token lexbuf }
 | _    { comment lexbuf }
+
+and single = parse
+  '\n' { token lexbuf }
+| _    { single lexbuf }
